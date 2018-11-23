@@ -48,6 +48,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_SECOND_TEXT, item.secondaryText);
         values.put(COL_FIRST_TEXT_SIZE,item.firstTextSize);
         values.put(COL_SECOND_TEXT_SIZE,item.secondTextSize);
+        values.put(THEME_NAME, item.theme);
         getWritableDatabase().update(TABLE_NAME, values, "_id=" + id, null);
     }
 

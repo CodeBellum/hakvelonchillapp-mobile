@@ -23,6 +23,8 @@ public class CustomItem {
     @Expose
     public int secondTextSize;
 
+
+
     public CustomItem(int id, String p, String s, int fs, int ss, String theme) {
         this.id = id;
         this.primaryText = p;
@@ -30,5 +32,6 @@ public class CustomItem {
         this.firstTextSize = fs;
         this.secondTextSize = ss;
         this.theme = theme;
+
     }
 }
