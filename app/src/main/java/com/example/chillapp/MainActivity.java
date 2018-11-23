@@ -1,5 +1,6 @@
 package com.example.chillapp;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,6 +17,9 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     boolean showFirst = true;
     LinearLayout first, second;
 
+    private DatabaseHelper dbHelper;
+    private Context context = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        dbHelper = new DatabaseHelper(context);
 
         initViews();
         setListener();

@@ -7,12 +7,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    public static final String COL_DATE = "date";
+    public static final String COL_SECOND_TEXT = "secondText";
     public static final String COL_ID = "_id";
-    public static final String COL_QUANT = "quant";
-    private static final String DATABASE_NAME = "quant.db";
+    public static final String COL_FIRST_TEXT = "firstText";
+    public static final String COL_FIRST_TEXT_SIZE = "firstTextSize";
+    public static final String COL_SECOND_TEXT_SIZE = "secondTextSize";
+    private static final String DATABASE_NAME = "chill.db";
     private static final int DATABASE_VERSION = 1;
-    public static final String TABLE_NAME = "quantum";
+    public static final String TABLE_NAME = "chillapp";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -31,19 +33,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void save(CustomItem item) {
         ContentValues values = new ContentValues();
-        values.put(COL_QUANT, item.primaryText);
-        values.put(COL_DATE, item.secondaryText);
+        values.put(COL_FIRST_TEXT, item.primaryText);
+        values.put(COL_SECOND_TEXT, item.secondaryText);
+        values.put(COL_FIRST_TEXT_SIZE,item.firstTextSize);
+        values.put(COL_SECOND_TEXT_SIZE,item.secondTextSize);
         getWritableDatabase().insertOrThrow(TABLE_NAME, null, values);
     }
 
     public void update(int id, CustomItem item) {
         ContentValues values = new ContentValues();
-        values.put(COL_QUANT, item.primaryText);
-        values.put(COL_DATE, item.secondaryText);
+        values.put(COL_FIRST_TEXT, item.primaryText);
+        values.put(COL_SECOND_TEXT, item.secondaryText);
+        values.put(COL_FIRST_TEXT_SIZE,item.firstTextSize);
+        values.put(COL_SECOND_TEXT_SIZE,item.secondTextSize);
         getWritableDatabase().update(TABLE_NAME, values, "_id=" + id, null);
     }
 
     public boolean delete(int id) {
         return getWritableDatabase().delete(TABLE_NAME, new StringBuilder().append("_id=").append(id).toString(), null) > 0;
     }
+
 }
