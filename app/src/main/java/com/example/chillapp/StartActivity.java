@@ -60,10 +60,12 @@ package com.example.chillapp;
 //        ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 
 import java.util.ArrayList;
@@ -93,6 +95,13 @@ public class StartActivity extends AppCompatActivity {
         preferences = getSharedPreferences("config", MODE_PRIVATE);
         dbHelper = new DatabaseHelper(context);
         getDBVersion();
+        findViewById(R.id.enter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void getDBVersion(){
@@ -108,17 +117,21 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<VersionResp> call, Response<VersionResp> response) {
                 if (response.isSuccessful()){
-                    if (!response.body().version.equals(preferences.getString(DB_VERSION, "")));
+                    if (!response.body().version.equals(preferences.getString(DB_VERSION, "")))
                     {
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putString(DB_VERSION, response.body().version);
+                        editor.apply();
+                        getPhrases();
                     }
+                } else {
+                    Log.e("getVersion", String.valueOf(response.code()));
                 }
             }
 
             @Override
             public void onFailure(Call<VersionResp> call, Throwable t) {
-
+                Log.e("getVersion", t.toString());
             }
         });
     }
@@ -139,6 +152,7 @@ public class StartActivity extends AppCompatActivity {
                     soundNames = new ArrayList<>();
 
                     for (int i = 0; i < response.body().size(); i++){
+                        dbHelper.save(response.body().get(i));
                         if (!soundNames.contains(response.body().get(i).theme))
                             soundNames.add(response.body().get(i).theme);
                     }

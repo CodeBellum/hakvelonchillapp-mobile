@@ -1,8 +1,10 @@
 package com.example.chillapp;
 
-import android.content.Context;
+import android.icu.util.MeasureUnit;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
 import android.view.View;
 
 import android.view.WindowManager;
@@ -10,6 +12,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
+import java.util.List;
 import java.util.Random;
 
 
@@ -18,7 +21,10 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     SecretTextView txt1, txt2, subTxt1, subTxt2;
     boolean showFirst = true;
     LinearLayout first, second;
-
+    private int i = 0;
+    List<CustomItem> phrases;
+    DatabaseHelper dbHelper;
+    CountDownTimer skipTimer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,12 +32,21 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        dbHelper = new DatabaseHelper(this);
+        phrases = dbHelper.getAll();
+
         initViews();
         setListener();
-        txt1.show();// показывает
+
+        txt1.setText(phrases.get(0).primaryText);
+        subTxt1.setText(phrases.get(0).secondaryText);
+        txt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, phrases.get(0).firstTextSize);
+        if (phrases.get(0).secondTextSize>0)
+            subTxt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, phrases.get(0).secondTextSize);
+        txt1.show();
         subTxt1.show();
-//        txt.hide();    // скрывает
-//        txt.toggle();  // показывает или скрывает в зависимости от текущего состояния видимости
+        findViewById(R.id.content).setClickable(false);
+        setTimer(phrases.get(0).minShowTime, phrases.get(0).maxShowTime);
     }
 
     private void initViews(){
@@ -48,34 +63,81 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         if(showFirst){
             txt1.setText(item.primaryText);
             subTxt1.setText(item.secondaryText);
+            txt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.firstTextSize);
+            if (item.secondTextSize>0)
+                subTxt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.secondTextSize);
         } else {
             txt2.setText(item.primaryText);
             subTxt2.setText(item.secondaryText);
+            txt2.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.firstTextSize);
+            if (item.secondTextSize>0)
+                subTxt2.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.secondTextSize);
         }
+        setTimer(item.minShowTime, item.maxShowTime);
     }
 
-    private void setListener(){
+    private void setTimer(long timeToTap, long timeToSkip) {
+        timeToSkip = timeToSkip - timeToTap;
+        skipTimer = new CountDownTimer(timeToSkip, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                showNext();
+            }
+        };
+
+        new CountDownTimer(timeToTap, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                skipTimer.start();
+                findViewById(R.id.content).setClickable(true);
+            }
+        }.start();
+    }
+
+    private void showNext(){
+        findViewById(R.id.content).setClickable(false);
         final Animation animation1 = AnimationUtils.loadAnimation(this, R.anim.fadeout);
         final Animation animation2 = AnimationUtils.loadAnimation(this, R.anim.fadeup);
         animation1.setAnimationListener(this);
         animation2.setAnimationListener(this);
+
+        if (i < phrases.size()-1) {
+            i++;
+            Random rnd = new Random(System.currentTimeMillis());
+            int number = rnd.nextInt(2);
+
+            switch (number) {
+                case 0:
+                    if (showFirst)
+                        first.startAnimation(animation1);
+                    else second.startAnimation(animation1);
+                    break;
+                case 1:
+                    if (showFirst)
+                        first.startAnimation(animation2);
+                    else second.startAnimation(animation2);
+                    break;
+            }
+        }
+    }
+
+    private void setListener(){
         findViewById(R.id.content).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Random rnd = new Random(System.currentTimeMillis());
-                int number = rnd.nextInt(2);
-                switch (number){
-                    case 0:
-                        if (showFirst)
-                            first.startAnimation(animation1);
-                        else  second.startAnimation(animation1);
-                        break;
-                    case 1:
-                        if (showFirst)
-                            first.startAnimation(animation2);
-                        else  second.startAnimation(animation2);
-                        break;
-                }
+                findViewById(R.id.content).setClickable(false);
+                skipTimer.cancel();
+                showNext();
             }
         });
     }
@@ -91,14 +153,14 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             txt1.setIsVisible(false);
             subTxt1.setIsVisible(false);
             showFirst = !showFirst;
-            //TODO поместить на это место функцию setChillText
+            setChillText(phrases.get(i));
             txt2.show();
             subTxt2.show();
         } else {
             txt2.setIsVisible(false);
             subTxt2.setIsVisible(false);
             showFirst = !showFirst;
-            //TODO поместить на это место функцию setChillText
+            setChillText(phrases.get(i));
             txt1.show();
             subTxt1.show();
         }
