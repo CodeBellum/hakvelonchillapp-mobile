@@ -14,7 +14,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_SECOND_TEXT_SIZE = "secondTextSize";
     public static final String THEME_NAME = "themeName";
     private static final String DATABASE_NAME = "chill.db";
-    private static final int DATABASE_VERSION = 1;
     public static final String TABLE_NAME = "chillapp";
 
     public DatabaseHelper(Context context) {
