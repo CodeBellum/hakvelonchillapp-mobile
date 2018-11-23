@@ -9,27 +9,52 @@
     android:paddingBottom="32dp"
     android:paddingStart="96dp"
     android:paddingEnd="32dp"
-    android:id="@+id/content">
+    android:id="@+id/content"
+    android:background="#ffffff">
 
-    <com.example.chillapp.SecretTextView
-        android:id="@+id/txt1"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/firstLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:textSize="24sp"
-        android:text="Text1"
-        android:textColor="@android:color/black"
-        />
+        android:orientation="vertical"
+        android:layout_centerVertical="true">
+        <com.example.chillapp.SecretTextView
+            android:id="@+id/txt1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:text="Text1"
+            android:textColor="@android:color/darker_gray"/>
 
-    <com.example.chillapp.SecretTextView
-        android:id="@+id/txt2"
-        android:layout_width="wrap_content"
+        <com.example.chillapp.SecretTextView
+            android:id="@+id/subTxt1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="SubText1"
+            android:textColor="@android:color/darker_gray"/>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/secondLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:textSize="24sp"
-        android:text="Text2"
-        android:textColor="@android:color/black"
-        />
+        android:orientation="vertical"
+        android:layout_centerVertical="true">
+        <com.example.chillapp.SecretTextView
+            android:id="@+id/txt2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:text="Text2"
+            android:textColor="@android:color/darker_gray" />
 
+        <com.example.chillapp.SecretTextView
+            android:id="@+id/subTxt2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="SubText2"
+            android:textColor="@android:color/darker_gray"/>
+    </LinearLayout>
 
 </RelativeLayout>

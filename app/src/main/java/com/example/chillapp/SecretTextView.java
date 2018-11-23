@@ -20,7 +20,7 @@ public class SecretTextView extends AppCompatTextView {
     private MutableForegroundColorSpan[] mSpans;
     private boolean mIsVisible;
     private boolean mIsTextResetting = false;
-    private int mDuration = 2500;
+    private int mDuration = 1000;
 
     ValueAnimator animator;
     ValueAnimator.AnimatorUpdateListener listener = new ValueAnimator.AnimatorUpdateListener() {
