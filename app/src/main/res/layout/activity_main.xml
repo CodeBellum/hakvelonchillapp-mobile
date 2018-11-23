@@ -5,14 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:padding="32dp">
+    android:padding="32dp"
+    android:id="@+id/content">
 
     <com.example.chillapp.SecretTextView
-        android:id="@+id/textview"
+        android:id="@+id/txt1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:textSize="18sp"
+        android:text="Text1"
+        android:textColor="@android:color/black"
+        />
+
+    <com.example.chillapp.SecretTextView
+        android:id="@+id/txt2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:textSize="18sp"
+        android:text="Text2"
         android:textColor="@android:color/black"
         />
 
