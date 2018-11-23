@@ -3,13 +3,21 @@ package com.example.chillapp;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
+import java.util.List;
 import java.util.Random;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements Animation.AnimationListener {
 
@@ -31,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
         initViews();
         setListener();
+        retrofitMethod();
         txt1.show();// показывает
         subTxt1.show();
 //        txt.hide();    // скрывает
@@ -55,6 +64,33 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             txt2.setText(item.primaryText);
             subTxt2.setText(item.secondaryText);
         }
+    }
+
+    private void retrofitMethod(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://hakvelonchillapp.herokuapp.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        RetrofitInterface retrofitApi = retrofit.create(RetrofitInterface.class);
+
+        //TODO принять список фраз для чила :)
+        Call<List<CustomItem>> callback = retrofitApi.getPhrases();
+
+        callback.enqueue(new Callback<List<CustomItem>>() {
+            @Override
+            public void onResponse(Call<List<CustomItem>> call, Response<List<CustomItem>> response) {
+                if (response.isSuccessful()){
+                    Log.e("Phrases", response.body().get(0).primaryText);
+                } else {
+                    Log.e("Phrases", String.valueOf(response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<CustomItem>> call, Throwable t) {
+                Log.e("Phrases", t.toString());
+            }
+        });
     }
 
     private void setListener(){
