@@ -43,6 +43,9 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 timer.cancel();
+                Intent intent = new Intent(context,MainActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
