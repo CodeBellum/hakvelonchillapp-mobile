@@ -12,6 +12,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_FIRST_TEXT = "firstText";
     public static final String COL_FIRST_TEXT_SIZE = "firstTextSize";
     public static final String COL_SECOND_TEXT_SIZE = "secondTextSize";
+    public static final String COL_FLAG = "secondTextSize";
     private static final String DATABASE_NAME = "chill.db";
     private static final int DATABASE_VERSION = 1;
     public static final String TABLE_NAME = "chillapp";
@@ -37,6 +38,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_SECOND_TEXT, item.secondaryText);
         values.put(COL_FIRST_TEXT_SIZE,item.firstTextSize);
         values.put(COL_SECOND_TEXT_SIZE,item.secondTextSize);
+        values.put(COL_FLAG,item.flag);
         getWritableDatabase().insertOrThrow(TABLE_NAME, null, values);
     }
 
@@ -46,6 +48,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_SECOND_TEXT, item.secondaryText);
         values.put(COL_FIRST_TEXT_SIZE,item.firstTextSize);
         values.put(COL_SECOND_TEXT_SIZE,item.secondTextSize);
+        values.put(COL_FLAG,item.flag);
         getWritableDatabase().update(TABLE_NAME, values, "_id=" + id, null);
     }
 
