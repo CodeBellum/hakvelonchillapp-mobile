@@ -1,9 +1,13 @@
 package com.example.chillapp;
 
+import android.content.res.AssetFileDescriptor;
 import android.icu.util.MeasureUnit;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 
@@ -25,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     List<CustomItem> phrases;
     DatabaseHelper dbHelper;
     CountDownTimer skipTimer;
+    MediaPlayer mediaPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +53,20 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         subTxt1.show();
         findViewById(R.id.content).setClickable(false);
         setTimer(phrases.get(0).minShowTime, phrases.get(0).maxShowTime);
+        try{
+            mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.sound_1);
+            mediaPlayer.start();
+        } catch (Exception e){
+            Log.e("playMusic", e.getMessage());
+        }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mediaPlayer.stop();
+        mediaPlayer.release();
     }
 
     private void initViews(){
