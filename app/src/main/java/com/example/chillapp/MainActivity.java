@@ -1,5 +1,7 @@
 package com.example.chillapp;
 
+import android.content.Context;
+import android.content.Intent;
 import android.icu.util.MeasureUnit;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import java.util.List;
@@ -25,6 +28,10 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     List<CustomItem> phrases;
     DatabaseHelper dbHelper;
     CountDownTimer skipTimer;
+    private Button reenter, airplane;
+    private Context context = this;
+    private LinearLayout layout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,19 +44,37 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
         initViews();
         setListener();
-
+        reenter = (Button) findViewById(R.id.reenter);
+        airplane = (Button) findViewById(R.id.exit_airplaneMode);
+        layout = (LinearLayout) findViewById(R.id.button_exit_layout);
         txt1.setText(phrases.get(0).primaryText);
         subTxt1.setText(phrases.get(0).secondaryText);
         txt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, phrases.get(0).firstTextSize);
-        if (phrases.get(0).secondTextSize>0)
+        if (phrases.get(0).secondTextSize > 0)
             subTxt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, phrases.get(0).secondTextSize);
         txt1.show();
         subTxt1.show();
         findViewById(R.id.content).setClickable(false);
         setTimer(phrases.get(0).minShowTime, phrases.get(0).maxShowTime);
+
+        reenter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, StartActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        airplane.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(android.provider.Settings.ACTION_AIRPLANE_MODE_SETTINGS));
+            }
+        });
     }
 
-    private void initViews(){
+    private void initViews() {
         txt1 = findViewById(R.id.txt1);
         txt2 = findViewById(R.id.txt2);
         subTxt1 = findViewById(R.id.subTxt1);
@@ -59,18 +84,18 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         second = findViewById(R.id.secondLayout);
     }
 
-    private void setChillText(CustomItem item){
-        if(showFirst){
+    private void setChillText(CustomItem item) {
+        if (showFirst) {
             txt1.setText(item.primaryText);
             subTxt1.setText(item.secondaryText);
             txt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.firstTextSize);
-            if (item.secondTextSize>0)
+            if (item.secondTextSize > 0)
                 subTxt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.secondTextSize);
         } else {
             txt2.setText(item.primaryText);
             subTxt2.setText(item.secondaryText);
             txt2.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.firstTextSize);
-            if (item.secondTextSize>0)
+            if (item.secondTextSize > 0)
                 subTxt2.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.secondTextSize);
         }
         setTimer(item.minShowTime, item.maxShowTime);
@@ -104,14 +129,14 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         }.start();
     }
 
-    private void showNext(){
+    private void showNext() {
         findViewById(R.id.content).setClickable(false);
         final Animation animation1 = AnimationUtils.loadAnimation(this, R.anim.fadeout);
         final Animation animation2 = AnimationUtils.loadAnimation(this, R.anim.fadeup);
         animation1.setAnimationListener(this);
         animation2.setAnimationListener(this);
 
-        if (i < phrases.size()-1) {
+        if (i < phrases.size() - 1) {
             i++;
             Random rnd = new Random(System.currentTimeMillis());
             int number = rnd.nextInt(2);
@@ -128,10 +153,10 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                     else second.startAnimation(animation2);
                     break;
             }
-        }
+        } else layout.setVisibility(View.VISIBLE);
     }
 
-    private void setListener(){
+    private void setListener() {
         findViewById(R.id.content).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
