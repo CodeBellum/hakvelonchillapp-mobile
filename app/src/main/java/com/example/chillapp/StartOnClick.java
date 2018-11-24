@@ -37,7 +37,8 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
     private RotateAnimation animationLeft;
     private DatabaseHelper dbHelper;
     private TextView textView;
-    private Timer timer;
+    private Check check;
+    private Timer timer, checkTimer;
     private MyTimerTask myTimerTask;
     SharedPreferences preferences;
     List<String> soundNames;
@@ -55,14 +56,16 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
         dbHelper = new DatabaseHelper(context);
         textView = (TextView) findViewById(R.id.yourPlace);
         timer = new Timer();
+        checkTimer = new Timer();
         myTimerTask = new MyTimerTask();
-
+        check = new Check();
     }
 
     public void disableAirplaneMode(){
         if (isAirplaneMode()) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(this);
             dialog.setTitle("Магия");
+            dialog.setCancelable(false);
             dialog.setMessage("Пожалуйста, выключите режим полета, и мы создадим для вас ваше уникальное тихое место, это не надолго. Обещаю");
             dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
@@ -76,6 +79,7 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
         }
         else {
             //TODO: сюда пихнуть скачку.
+            checkTimer.cancel();
             getDBVersion();
         }
     }
@@ -200,6 +204,18 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
                     Intent intent = new Intent(context,StartActivity.class);
                     startActivity(intent);
                     finish();
+                }
+            });
+
+        }
+    }
+    class Check extends TimerTask{
+        @Override
+        public void run() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    disableAirplaneMode();
                 }
             });
 
