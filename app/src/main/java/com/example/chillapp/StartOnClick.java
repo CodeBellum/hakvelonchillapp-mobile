@@ -4,10 +4,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -16,11 +18,24 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class StartOnClick extends AppCompatActivity implements Animation.AnimationListener {
 
     private ImageView animateImgView;
     private Context context = this;
-    private RotateAnimation animationRight, animationLeft;
+    private RotateAnimation animationLeft;
+    private DatabaseHelper dbHelper;
+    SharedPreferences preferences;
+    List<String> soundNames;
+    private final static String DB_VERSION = "dbversion";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,11 +45,15 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         animateImgView = (ImageView) findViewById(R.id.startImg);
 
+        preferences = getSharedPreferences("config", MODE_PRIVATE);
+        dbHelper = new DatabaseHelper(context);
+
+
 
     }
 
     public void disableAirplaneMode(){
-        if (!isAirplaneMode()) {
+        if (isAirplaneMode()) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(this);
             dialog.setTitle("Магия");
             dialog.setMessage("Пожалуйста, выключите режим полета, и мы создадим для вас ваше уникальное тихое место, это не надолго. Обещаю");
@@ -50,6 +69,7 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
         }
         else {
             //TODO: сюда пихнуть скачку.
+            getDBVersion();
         }
     }
 
@@ -90,5 +110,77 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
     protected void onResume() {
         disableAirplaneMode();
         super.onResume();
+    }
+
+    private void getDBVersion(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://hakvelonchillapp.herokuapp.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        RetrofitInterface retrofitApi = retrofit.create(RetrofitInterface.class);
+
+        Call<VersionResp> callback = retrofitApi.getVersion();
+
+        callback.enqueue(new Callback<VersionResp>() {
+            @Override
+            public void onResponse(Call<VersionResp> call, Response<VersionResp> response) {
+                if (response.isSuccessful()){
+                    if (!response.body().version.equals(preferences.getString(DB_VERSION, "")))
+                    {
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putString(DB_VERSION, response.body().version);
+                        editor.apply();
+                        getPhrases();
+                    }
+                    else {
+                        Intent intent = new Intent(context,StartActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                } else {
+                    Log.e("getVersion", String.valueOf(response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<VersionResp> call, Throwable t) {
+                Log.e("getVersion", t.toString());
+            }
+        });
+    }
+
+    private void getPhrases(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://hakvelonchillapp.herokuapp.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        RetrofitInterface retrofitApi = retrofit.create(RetrofitInterface.class);
+
+        Call<List<CustomItem>> callback = retrofitApi.getPhrases();
+
+        callback.enqueue(new Callback<List<CustomItem>>() {
+            @Override
+            public void onResponse(Call<List<CustomItem>> call, Response<List<CustomItem>> response) {
+                if (response.isSuccessful()){
+                    soundNames = new ArrayList<>();
+
+                    for (int i = 0; i < response.body().size(); i++){
+                        dbHelper.save(response.body().get(i));
+                        if (!soundNames.contains(response.body().get(i).theme))
+                            soundNames.add(response.body().get(i).theme);
+                    }
+                    Intent intent = new Intent(context,StartActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Log.e("Phrases", String.valueOf(response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<CustomItem>> call, Throwable t) {
+                Log.e("Phrases", t.toString());
+            }
+        });
     }
 }

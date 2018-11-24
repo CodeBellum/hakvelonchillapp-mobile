@@ -62,6 +62,7 @@ package com.example.chillapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -71,6 +72,8 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -80,10 +83,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class StartActivity extends AppCompatActivity {
 
-    List<String> soundNames;
+
     private DatabaseHelper dbHelper;
     private Context context = this;
     SharedPreferences preferences;
+    private Timer timer;
+    private Button enter, airplane;
+    private AnySecond anySecond;
     private final static String DB_VERSION = "dbversion";
 
     @Override
@@ -92,80 +98,41 @@ public class StartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        preferences = getSharedPreferences("config", MODE_PRIVATE);
-        dbHelper = new DatabaseHelper(context);
-        getDBVersion();
+        airplane = (Button) findViewById(R.id.airplaneMode);
+        timer = new Timer();
+        anySecond = new AnySecond();
+        timer.scheduleAtFixedRate(anySecond,1000,2000);
+        airplane.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(android.provider.Settings.ACTION_AIRPLANE_MODE_SETTINGS));
+            }
+        });
         findViewById(R.id.enter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
+                timer.cancel();
+                finish();
             }
         });
     }
-
-    private void getDBVersion(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://hakvelonchillapp.herokuapp.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        RetrofitInterface retrofitApi = retrofit.create(RetrofitInterface.class);
-
-        Call<VersionResp> callback = retrofitApi.getVersion();
-
-        callback.enqueue(new Callback<VersionResp>() {
-            @Override
-            public void onResponse(Call<VersionResp> call, Response<VersionResp> response) {
-                if (response.isSuccessful()){
-                    if (!response.body().version.equals(preferences.getString(DB_VERSION, "")))
-                    {
-                        SharedPreferences.Editor editor = preferences.edit();
-                        editor.putString(DB_VERSION, response.body().version);
-                        editor.apply();
-                        getPhrases();
-                    }
-                } else {
-                    Log.e("getVersion", String.valueOf(response.code()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<VersionResp> call, Throwable t) {
-                Log.e("getVersion", t.toString());
-            }
-        });
+    public boolean isAirplaneMode() {
+        return Settings.System.getInt(this.getContentResolver(),
+                Settings.System.AIRPLANE_MODE_ON, 0) == 1;
     }
 
-    private void getPhrases(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://hakvelonchillapp.herokuapp.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        RetrofitInterface retrofitApi = retrofit.create(RetrofitInterface.class);
-
-        Call<List<CustomItem>> callback = retrofitApi.getPhrases();
-
-        callback.enqueue(new Callback<List<CustomItem>>() {
-            @Override
-            public void onResponse(Call<List<CustomItem>> call, Response<List<CustomItem>> response) {
-                if (response.isSuccessful()){
-                    soundNames = new ArrayList<>();
-
-                    for (int i = 0; i < response.body().size(); i++){
-                        dbHelper.save(response.body().get(i));
-                        if (!soundNames.contains(response.body().get(i).theme))
-                            soundNames.add(response.body().get(i).theme);
-                    }
-                } else {
-                    Log.e("Phrases", String.valueOf(response.code()));
+    class  AnySecond extends TimerTask {
+        @Override
+        public void run() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (isAirplaneMode()) airplane.setVisibility(View.GONE);
+                    else airplane.setVisibility(View.VISIBLE);
                 }
-            }
-
-            @Override
-            public void onFailure(Call<List<CustomItem>> call, Throwable t) {
-                Log.e("Phrases", t.toString());
-            }
-        });
+            });
+        }
     }
 }
