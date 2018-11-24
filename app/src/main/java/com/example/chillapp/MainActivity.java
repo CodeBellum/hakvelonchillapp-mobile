@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         setContentView(R.layout.activity_main);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         dbHelper = new DatabaseHelper(this);
         phrases = dbHelper.getAll();
         initViews();
