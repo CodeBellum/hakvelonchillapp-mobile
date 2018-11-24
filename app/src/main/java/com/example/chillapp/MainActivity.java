@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     private Context context = this;
     private LinearLayout layout;
     private String currentSound;
+    private int lastSec;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
         dbHelper = new DatabaseHelper(this);
         phrases = dbHelper.getAll();
-
         initViews();
         setListener();
         reenter = (Button) findViewById(R.id.reenter);
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         setTimer(phrases.get(0).minShowTime, phrases.get(0).maxShowTime);
         currentSound = phrases.get(0).theme;
         runSound(getResources().getIdentifier(phrases.get(0).theme, "raw", getPackageName()));
-
+        lastSec = 100;
 
         reenter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         mediaPlayer.release();
     }
 
-    private void runSound(int resId){
+    private void runSound(int resId) {
         try {
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
@@ -129,10 +129,28 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
     private void setTimer(long timeToTap, long timeToSkip) {
         timeToSkip = timeToSkip - timeToTap;
+        if (showFirst) {
+            if (txt1.getText().toString().contains("@time")) {
+                txt1.setText(txt1.getText().toString().replace("@time", "30"));
+                lastSec = 30;
+            }
+        } else {
+            if (txt2.getText().toString().contains("@time")) {
+                txt2.setText(txt2.getText().toString().replace("@time", "30"));
+                lastSec = 30;
+            }
+        }
         skipTimer = new CountDownTimer(timeToSkip, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-
+                if (showFirst) {
+                    txt1.setText(txt1.getText().toString().replace(String.valueOf(lastSec),String.valueOf(millisUntilFinished)));
+                    lastSec = (int) (millisUntilFinished/1000);
+                }
+                else {
+                    txt2.setText(txt2.getText().toString().replace(String.valueOf(lastSec),String.valueOf(millisUntilFinished)));
+                    lastSec = (int) (millisUntilFinished/1000);
+                }
             }
 
             @Override
