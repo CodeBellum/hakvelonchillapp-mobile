@@ -17,9 +17,12 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,6 +36,9 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
     private Context context = this;
     private RotateAnimation animationLeft;
     private DatabaseHelper dbHelper;
+    private TextView textView;
+    private Timer timer;
+    private MyTimerTask myTimerTask;
     SharedPreferences preferences;
     List<String> soundNames;
     private final static String DB_VERSION = "dbversion";
@@ -47,8 +53,9 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
 
         preferences = getSharedPreferences("config", MODE_PRIVATE);
         dbHelper = new DatabaseHelper(context);
-
-
+        textView = (TextView) findViewById(R.id.yourPlace);
+        timer = new Timer();
+        myTimerTask = new MyTimerTask();
 
     }
 
@@ -133,9 +140,7 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
                         getPhrases();
                     }
                     else {
-                        Intent intent = new Intent(context,StartActivity.class);
-                        startActivity(intent);
-                        finish();
+                        lastSecondsInUI();
                     }
                 } else {
                     Log.e("getVersion", String.valueOf(response.code()));
@@ -169,9 +174,7 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
                         if (!soundNames.contains(response.body().get(i).theme))
                             soundNames.add(response.body().get(i).theme);
                     }
-                    Intent intent = new Intent(context,StartActivity.class);
-                    startActivity(intent);
-                    finish();
+                    lastSecondsInUI();
                 } else {
                     Log.e("Phrases", String.valueOf(response.code()));
                 }
@@ -182,5 +185,24 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
                 Log.e("Phrases", t.toString());
             }
         });
+    }
+    public void lastSecondsInUI(){
+        textView.setText("Вжух! Добро пожаловать.");
+        timer.schedule(myTimerTask,2000);
+    }
+    class MyTimerTask extends TimerTask{
+        @Override
+        public void run() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    timer.cancel();
+                    Intent intent = new Intent(context,StartActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+
+        }
     }
 }
