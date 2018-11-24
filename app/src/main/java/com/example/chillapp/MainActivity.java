@@ -52,9 +52,9 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         layout = (LinearLayout) findViewById(R.id.button_exit_layout);
         txt1.setText(phrases.get(0).primaryText);
         subTxt1.setText(phrases.get(0).secondaryText);
-        txt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, phrases.get(0).firstTextSize);
+        txt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, phrases.get(0).firstTextSize+2);
         if (phrases.get(0).secondTextSize > 0)
-            subTxt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, phrases.get(0).secondTextSize);
+            subTxt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, phrases.get(0).secondTextSize+2);
         txt1.show();
         subTxt1.show();
         findViewById(R.id.content).setClickable(false);
@@ -114,15 +114,15 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         if (showFirst) {
             txt1.setText(item.primaryText);
             subTxt1.setText(item.secondaryText);
-            txt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.firstTextSize);
+            txt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.firstTextSize+2);
             if (item.secondTextSize > 0)
-                subTxt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.secondTextSize);
+                subTxt1.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.secondTextSize+2);
         } else {
             txt2.setText(item.primaryText);
             subTxt2.setText(item.secondaryText);
-            txt2.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.firstTextSize);
+            txt2.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.firstTextSize+2);
             if (item.secondTextSize > 0)
-                subTxt2.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.secondTextSize);
+                subTxt2.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.secondTextSize+2);
         }
         setTimer(item.minShowTime, item.maxShowTime);
     }
