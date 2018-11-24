@@ -16,6 +16,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -143,14 +144,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         skipTimer = new CountDownTimer(timeToSkip, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                if (showFirst) {
-                    txt1.setText(txt1.getText().toString().replace(String.valueOf(lastSec),String.valueOf(millisUntilFinished)));
-                    lastSec = (int) (millisUntilFinished/1000);
-                }
-                else {
-                    txt2.setText(txt2.getText().toString().replace(String.valueOf(lastSec),String.valueOf(millisUntilFinished)));
-                    lastSec = (int) (millisUntilFinished/1000);
-                }
+
             }
 
             @Override
@@ -162,7 +156,14 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         new CountDownTimer(timeToTap, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-
+                if (showFirst) {
+                    txt1.setText(txt1.getText().toString().replace(String.valueOf(lastSec),String.valueOf(millisUntilFinished/1000)));
+                    lastSec = (int) (millisUntilFinished/1000);
+                }
+                else {
+                    txt2.setText(txt2.getText().toString().replace(String.valueOf(lastSec),String.valueOf(millisUntilFinished/1000)));
+                    lastSec = (int) (millisUntilFinished/1000);
+                }
             }
 
             @Override
