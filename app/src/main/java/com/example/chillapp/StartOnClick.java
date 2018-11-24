@@ -66,9 +66,9 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
     public void disableAirplaneMode(){
         if (isAirplaneMode()) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-            dialog.setTitle("Магия");
+            dialog.setTitle("Магия вне Хогвартса");
             dialog.setCancelable(false);
-            dialog.setMessage("Пожалуйста, выключите режим полета, и мы создадим для вас ваше уникальное тихое место, это не надолго. Обещаю");
+            dialog.setMessage("Пожалуйста, выключи режим полета, и наша магия сделает все остальное.\nЭто не займет много времени.");
             dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
