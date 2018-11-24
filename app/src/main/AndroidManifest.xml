@@ -23,7 +23,6 @@
             android:name=".StartActivity"
             android:screenOrientation="landscape">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.AIRPLANE_MODE" />
             </intent-filter>
         </activity>

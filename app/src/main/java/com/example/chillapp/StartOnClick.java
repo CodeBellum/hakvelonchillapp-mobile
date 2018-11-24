@@ -44,6 +44,8 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
     List<String> soundNames;
     private final static String DB_VERSION = "dbversion";
 
+    private boolean flag = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,14 +108,16 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
 
-
-        animationLeft = new RotateAnimation(-35, 15, animateImgView.getMeasuredWidth()/2, animateImgView.getMeasuredHeight()/2);
-        animationLeft.setRepeatMode(Animation.REVERSE);
-        animationLeft.setRepeatCount(Animation.INFINITE);
-        animationLeft.setInterpolator(new LinearInterpolator());
-        animationLeft.setDuration(2000L);
-        animationLeft.setAnimationListener(this);
-        animateImgView.startAnimation(animationLeft);
+        if(flag) {
+            flag = false;
+            animationLeft = new RotateAnimation(-35, 15, animateImgView.getMeasuredWidth() / 2, animateImgView.getMeasuredHeight() / 2);
+            animationLeft.setRepeatMode(Animation.REVERSE);
+            animationLeft.setRepeatCount(Animation.INFINITE);
+            animationLeft.setInterpolator(new LinearInterpolator());
+            animationLeft.setDuration(2000L);
+            animationLeft.setAnimationListener(this);
+            animateImgView.startAnimation(animationLeft);
+        }
         super.onWindowFocusChanged(hasFocus);
     }
 
@@ -154,6 +158,7 @@ public class StartOnClick extends AppCompatActivity implements Animation.Animati
             @Override
             public void onFailure(Call<VersionResp> call, Throwable t) {
                 Log.e("getVersion", t.toString());
+                getDBVersion();
             }
         });
     }

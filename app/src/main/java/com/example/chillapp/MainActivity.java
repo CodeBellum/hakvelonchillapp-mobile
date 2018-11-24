@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     private Button reenter, airplane;
     private Context context = this;
     private LinearLayout layout;
+    private String currentSound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +59,8 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         subTxt1.show();
         findViewById(R.id.content).setClickable(false);
         setTimer(phrases.get(0).minShowTime, phrases.get(0).maxShowTime);
-        try {
-            mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.sound_1);
-            mediaPlayer.start();
-        } catch (Exception e) {
-            Log.e("playMusic", e.getMessage());
-        }
+        currentSound = phrases.get(0).theme;
+        runSound(getResources().getIdentifier(phrases.get(0).theme, "raw", getPackageName()));
 
 
         reenter.setOnClickListener(new View.OnClickListener() {
@@ -90,6 +87,18 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         mediaPlayer.release();
     }
 
+    private void runSound(int resId){
+        try {
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+                mediaPlayer = null;
+            }
+            mediaPlayer = MediaPlayer.create(getApplicationContext(), resId);
+            mediaPlayer.start();
+        } catch (Exception e) {
+            Log.e("playMusic", e.getMessage());
+        }
+    }
 
     private void initViews() {
         txt1 = findViewById(R.id.txt1);
@@ -155,6 +164,10 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
         if (i < phrases.size() - 1) {
             i++;
+            if (!currentSound.equals(phrases.get(i).theme)) {
+                runSound(getResources().getIdentifier(phrases.get(i).theme, "raw", getPackageName()));
+                currentSound = phrases.get(i).theme;
+            }
             Random rnd = new Random(System.currentTimeMillis());
             int number = rnd.nextInt(2);
 
